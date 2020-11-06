@@ -1,0 +1,8 @@
+{
+    "name": "Icon Clock",
+    "description": "Add a 24-hour clock in a toolbar icon",
+    "version": "1",
+    "manifest_version": 2,
+    "browser_action" : { },
+    "background": { "scripts": ["background.js"] }
+}

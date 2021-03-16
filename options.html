@@ -2,11 +2,17 @@
 <html>
     <head>
         <meta charset="utf-8">
+        <style>
+            #popup { position: absolute; visibility: hidden; }
+        </style>
     </head>
     <body>
         <form>
-            <button type="submit" id="hour12">12 hour</button>
-            <button type="submit" id="hour24">24 hour</button>
+            <input type="button" id="hour12" value="12 hour">
+            <input type="button" id="hour24" value="24 hour">
+            <input type="button" id="color" value="Color">
+            <!-- hidden -->
+            <input type="color" id="popup">
         </form>
         <script src="options.js"></script>
     </body>

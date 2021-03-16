@@ -1,10 +1,11 @@
 {
     "manifest_version": 2,
     "name": "Icon Clock",
-    "description": "Yet another toobar icon clock",
-    "version": "2",
-    "browser_action" : { },
+    "description": "Yet another toolbar icon clock",
+    "version": "3",
+    "browser_action": { },
     "background": { "scripts": ["background.js"] },
-    "permissions": ["storage"],
-    "options_ui": { "page": "options.html" }
+    "homepage_url": "https://github.com/glitchub/icon_clock",
+    "options_ui": { "page": "options.html" },
+    "permissions": ["storage"]
 }

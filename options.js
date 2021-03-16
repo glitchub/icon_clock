@@ -1,12 +1,44 @@
-// Just shows two buttons and set the "hour12" flag true or false when they are pressed
+// Icon Clock options
 
-"use strict";
+// Note inline scripts are disallowed so we use event listeners.
 
-function clicked(event, flag)
+var color = "#808080"
+var hours = 0;
+
+// Initialize on load.
+function init()
 {
-    browser.storage.local.set({"hour12" : flag});
-    event.preventDefault(); // don't submit
+    browser.storage.local.get().then((s)=>{
+        if (s.color) color = s.color;
+        if (s.hours) hours = s.hours;
+    });
 }
+document.addEventListener("DOMContentLoaded", init);
 
-document.getElementById("hour12").addEventListener("click", (event)=>clicked(event, true) );
-document.getElementById("hour24").addEventListener("click", (event)=>clicked(event, false) );
+// Set 12 or 24 hours when corresponding button is clicked.
+function uphours(h)
+{
+    if (hours != h) { hours = h; browser.storage.local.set({"hours" : hours}); }
+}
+document.getElementById("hour12").addEventListener("click", () => { uphours(12); });
+document.getElementById("hour24").addEventListener("click", () => { uphours(24); });
+
+// Popup the color input dialog when the color button is clicked (the real color
+// button is hidden).
+function popup()
+{
+    var p = document.getElementById("popup");
+    p.focus();
+    p.value = color;
+    p.click();
+}
+document.getElementById("color").addEventListener("click", popup);
+
+// Update color in real time as it changes (background.js will receive the
+// storage events and redraw the clock).
+function upcolor()
+{
+    var v = document.getElementById("popup").value;
+    if (color != v) { color = v; browser.storage.local.set({"color" : color}); }
+}
+document.getElementById("popup").addEventListener("input", upcolor);

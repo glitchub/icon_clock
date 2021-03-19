@@ -27,7 +27,7 @@ document.getElementById("hour24").addEventListener("click", () => { uphours(24);
 // button is hidden).
 function popup()
 {
-    var p = document.getElementById("popup");
+    let p = document.getElementById("popup");
     p.focus();
     p.value = color;
     p.click();
@@ -38,7 +38,7 @@ document.getElementById("color").addEventListener("click", popup);
 // storage events and redraw the clock).
 function upcolor()
 {
-    var v = document.getElementById("popup").value;
+    let v = document.getElementById("popup").value;
     if (color != v) { color = v; browser.storage.local.set({"color" : color}); }
 }
 document.getElementById("popup").addEventListener("input", upcolor);

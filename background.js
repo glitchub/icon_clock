@@ -1,61 +1,88 @@
 // Icon Clock
 
+// default params, overriden by storage
 var color = "#808080";
 var hours = 24;
 
-// Pad number n to two digits with leading zero
-function nn(n) { return ("00" + n).slice(-2) }
+// const font = "bold 256px sans-serif";
+// XXX select font family and weight as an option
+const font = "256px sans-serif"; // make it large since it will be scaled down
 
-// Write current time to the toolicon using current hours and color
-function redraw()
 {
-    let date = new Date();
-    let hh = date.getHours();
+    // Determine the exact bounding box for 2x2 digits
+    let can = document.createElement("canvas");
+    let con = can.getContext("2d");
+    con.font = font;
+    con.textBaseline = "top";
 
+    // look for worst case of each
+    let mleft = 999, mright = 0, masc = 999, mdesc = 0;
+    pairs = ["11", "22", "33", "44", "55", "66", "77", "88", "99", "00"];
+    pairs.forEach((p) => {
+        let m = con.measureText(p);
+        if (m.actualBoundingBoxLeft < mleft) mleft = m.actualBoundingBoxLeft;
+        if (m.actualBoundingBoxRight > mright) mright = m.actualBoundingBoxRight;
+        if (-m.actualBoundingBoxAscent < masc) masc = -m.actualBoundingBoxAscent; // negative!
+        if (m.actualBoundingBoxDescent > mdesc) mdesc = m.actualBoundingBoxDescent;
+    });
+    // console.log("mleft="+mleft, "mright="+mright, "masc="+masc, "mdesc="+mdesc);
+
+    let gap = mdesc * .2;                           // gap between lines
+    var bleft = mleft;                              // bounded left offset
+    var btop = masc;                                // bounded top offset
+    var bwidth = mright - mleft;                    // bounded width
+    var bheight = (mdesc * 2) + gap - masc;         // bounded height
+    // console.log("second="+bsecond, "bleft="+bleft, "btop="+btop, "bwidth="+bwidth, "bheight"+bheight);
+
+    var dsecond = mdesc + gap;                      // draw offset to top of second line
+    var dwidth = mright + mleft;                    // draw width
+    var dheight = (mdesc * 2) + (masc * 2) + gap;   // draw height
+    // console.log("dsecond="+dsecond, "dwidth="+dwidth, "dheight="+dheight);
+}
+
+var timer = null; // currently running timer
+
+// Update the clock and schedule the next
+function update()
+{
+    let can = document.createElement("canvas");     // canvas
+    can.width = dwidth;                             // with enough room to draw
+    can.height = dheight;
+    let con = can.getContext("2d");
+    con.font = font;
+    con.textBaseline = "top";
+    con.fillStyle = color;                          // use specified color
+
+    let date = new Date();
+
+    // maybe adjust  12h
+    let hh = date.getHours();
     if (hours == 12)
     {
-        // 12 hour clock
         if (!hh) hh = 12;
         else if (hh > 12) hh -= 12;
     }
 
-    // Create a canvas, write hour and minute to it
-    let can = document.createElement("canvas");
-    let con = can.getContext("2d");
-    con.fillStyle = color;
+    // hours on top line (with leading "0")
+    con.fillText(("0" + hh).slice(-2), 0, 0);
 
-    // Blindly hope that sans-serif digits at 80px will only render 64
-    // pixels? XXX use text metrics to determine the actual size.
-    con.font = 'bold 80px sans-serif';
-    con.direction = 'ltr';
-    con.textAlign = 'center';
+    // minutes on the bottom line
+    con.fillText(("0" + date.getMinutes()).slice(-2), 0, dsecond);
 
-    // Write hh across the top.
-    con.textBaseline = 'top';
-    con.fillText(nn(hh), 64, 0);
+    // update icon with bounded text (it will be scaled to fit)
+    browser.browserAction.setIcon({imageData: con.getImageData(bleft, btop, bwidth, bheight)});
 
-    // Write mm across the bottom.
-    con.textBaseline = 'alphabetic';
-    con.fillText(nn(date.getMinutes()), 64, 127);
-
-    // Update the button with the new canvas. The icon flickers, no way around that AFAIK.
-    browser.browserAction.setIcon({imageData: con.getImageData(0, 0, 128, 128)});
-
-    // Also show the date on hover.
+    // also show date on hover
     browser.browserAction.setTitle({title: date.toDateString()});
-}
 
-var timer = null; // current running timer
-// Redraw the clock and reschedule for 100mS after the minute.
-function update()
-{
-    redraw();
+    // schedule timer for another update 100mS after the next minute
     clearTimeout(timer);
     timer = setTimeout(update, 60100 - (Date.now() % 60000));
 }
 
 // Set hours and color from storage and do the first update
-browser.storage.local.get().then((res) => {
+browser.storage.local.get().then((res) =>
+{
     // console.log("Got local storage", res.hours, res.color);
     if (res.color) color = res.color;
     if (res.hours) hours = res.hours;
@@ -63,7 +90,8 @@ browser.storage.local.get().then((res) => {
 });
 
 // Handle storage changes from options.js
-browser.storage.onChanged.addListener((change, name) => {
+browser.storage.onChanged.addListener((change, name) =>
+{
     // console.log("Change %o %s", change, name);
     if (name == "local")
     {

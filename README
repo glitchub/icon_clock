@@ -1,7 +1,8 @@
-Icon Clock
+Icon Clock - Yet another toolbar icon clock
 
-A firefox extension providing yet another toolbar icon clock.
+A very simple Firefox extension to show the current time as a toolbar icon.
 
-Show the current time in a toolbar icon. Click the icon to set the color or
-switch between 12- and 24-hour time. Hover over the icon to see the current
-date.
+Hover over the icon to see the current date.
+
+Click the icon to bring up the extension options page where you can change the
+digit color or switch between 12- and 24-hour time format.

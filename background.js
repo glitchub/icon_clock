@@ -32,6 +32,8 @@ function metrics()
     // console.log("mleft="+mleft, "mright="+mright, "masc="+masc, "mdesc="+mdesc);
 
     let gap = mdesc * 0.18;                         // gap between lines
+
+    // set globals
     bleft = mleft;                                  // bounded left offset
     btop = masc;                                    // bounded top offset
     bwidth = mright - mleft;                        // bounded width
@@ -87,7 +89,7 @@ function update()
 browser.storage.local.get().then((res)=>
 {
     // console.log("Got local storage", res.hours, res.color);
-    color = res.color || "#ffff00";
+    color = res.color || "#ff0000";
     hours = res.hours || 24;
     weight = res.weight || "bold";
     family = res.family || "sans-serif";

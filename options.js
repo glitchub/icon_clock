@@ -10,7 +10,7 @@ var weight;
 // Initialize on load.
 document.addEventListener("DOMContentLoaded", ()=>{
     browser.storage.local.get().then((s)=>{
-        color = s.color || "#ffff00";
+        color = s.color || "#ff0000";
         hours = s.hours || 24;
         document.getElementById("hours").value = hours;
         family = s.family || "sans-serif";

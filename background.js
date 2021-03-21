@@ -89,7 +89,7 @@ browser.storage.local.get().then((res)=>
     // console.log("Got local storage", res.hours, res.color);
     color = res.color || "#ffff00";
     hours = res.hours || 24;
-    weight = res.weight || "normal";
+    weight = res.weight || "bold";
     family = res.family || "sans-serif";
     metrics();
     update();

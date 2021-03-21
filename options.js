@@ -15,7 +15,7 @@ document.addEventListener("DOMContentLoaded", ()=>{
         document.getElementById("hours").value = hours;
         family = s.family || "sans-serif";
         document.getElementById("family").value = family;
-        weight = s.weight || "normal";
+        weight = s.weight || "bold";
         document.getElementById("weight").value = weight;
     });
 });

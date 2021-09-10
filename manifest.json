@@ -2,7 +2,7 @@
     "manifest_version": 2,
     "name": "Icon Clock",
     "description": "Yet another toolbar icon clock",
-    "version": "6",
+    "version": "7",
     "browser_action": { },
     "background": { "scripts": ["background.js"] },
     "homepage_url": "https://github.com/glitchub/icon_clock",

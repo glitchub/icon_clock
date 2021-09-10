@@ -2,17 +2,20 @@
 
 var color;
 var hours;
+var family;
+var weight;
 
-// Use a large font since it will be scaled down
-// XXX select font family and weight as an option
-// const font = "bold 256px sans-serif";
-const font = "256px sans-serif";
+// Return font string, use a very large size since it will be scaled down
+function font() { return weight + " 256px " + family; }
 
+// Determine the exact bounding box for 2-bt-2 digits at 256px and set global
+// variables. Invoked whenever weight or family changes.
+var bleft, btop, bwidth, bheight, dsecond, dwidth, dheight;
+function metrics()
 {
-    // Determine the exact bounding box for 2-bt-2 digits at 256px
     let can = document.createElement("canvas");
     let con = can.getContext("2d");
-    con.font = font;
+    con.font = font();
     con.textBaseline = "top";
 
     // Get worst case metrics for all digits.
@@ -29,15 +32,17 @@ const font = "256px sans-serif";
     // console.log("mleft="+mleft, "mright="+mright, "masc="+masc, "mdesc="+mdesc);
 
     let gap = mdesc * 0.18;                         // gap between lines
-    var bleft = mleft;                              // bounded left offset
-    var btop = masc;                                // bounded top offset
-    var bwidth = mright - mleft;                    // bounded width
-    var bheight = (mdesc * 2) + gap - masc;         // bounded height
+
+    // set globals
+    bleft = mleft;                                  // bounded left offset
+    btop = masc;                                    // bounded top offset
+    bwidth = mright - mleft;                        // bounded width
+    bheight = (mdesc * 2) + gap - masc;             // bounded height
     // console.log("bleft="+bleft, "btop="+btop, "bwidth="+bwidth, "bheight"+bheight);
 
-    var dsecond = mdesc + gap;                      // draw offset to top of second line
-    var dwidth = mright + mleft;                    // draw width
-    var dheight = (mdesc * 2) + (masc * 2) + gap;   // draw height
+    dsecond = mdesc + gap;                          // draw offset to top of second line
+    dwidth = mright + mleft;                        // draw width
+    dheight = (mdesc * 2) + (masc * 2) + gap;       // draw height
     // console.log("dsecond="+dsecond, "dwidth="+dwidth, "dheight="+dheight);
 }
 
@@ -50,7 +55,7 @@ function update()
     can.width = dwidth;                             // with enough room to draw
     can.height = dheight;
     let con = can.getContext("2d");
-    con.font = font;
+    con.font = font();
     con.textBaseline = "top";
     con.fillStyle = color;                          // use specified color
 
@@ -86,6 +91,9 @@ browser.storage.local.get().then((res)=>
     // console.log("Got local storage", res.hours, res.color);
     color = res.color || "#ffff00";
     hours = res.hours || 24;
+    weight = res.weight || "normal";
+    family = res.family || "sans-serif";
+    metrics();
     update();
 });
 
@@ -93,10 +101,16 @@ browser.storage.local.get().then((res)=>
 browser.storage.onChanged.addListener((change, name)=>
 {
     // console.log("Change %o %s", change, name);
-    if (name == "local" && (change.hours || change.color))
+    if (name == "local")
     {
         if (change.hours) hours = change.hours.newValue;
         if (change.color) color = change.color.newValue;
+        if (change.weight || change.family)
+        {
+            if (change.weight) weight =  change.weight.newValue;
+            if (change.family) family = change.family.newValue;
+            metrics();
+        }
         update();
     }
 });
